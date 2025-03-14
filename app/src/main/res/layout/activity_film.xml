@@ -1,0 +1,325 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Orange"
+    tools:context=".Film">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/film_banner"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="-5dp"
+            android:contentDescription="@string/todo"
+            android:scaleType="centerCrop"
+            android:src="@drawable/gradient" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="216dp"
+            android:layout_marginTop="80dp"
+            android:contentDescription="@string/todo"
+            android:scaleType="centerCrop"
+            android:src="@drawable/gradient" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/back"
+            style="@android:style/Widget.Button"
+            android:layout_width="35dp"
+            android:layout_height="25dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="34dp"
+            android:layout_marginEnd="9dp"
+            android:background="@drawable/rate_btn"
+            android:drawableStart="@drawable/back_icon"
+            android:elevation="30dp"
+            android:fontFamily="@font/poppins"
+            android:paddingStart="10dp"
+            android:textColor="@color/whitegray"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="180dp"
+            android:orientation="vertical"
+            android:padding="12dp">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rate"
+                style="@android:style/Widget.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:alpha="0.8"
+                android:background="@drawable/rate_btn"
+                android:elevation="30dp"
+                android:fontFamily="@font/poppins"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:text="Top 107 IMDb"
+                android:textAlignment="center"
+                android:textColor="@color/whitegray"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/watch_now"
+                    style="@android:style/Widget.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dp"
+                    android:alpha="0.8"
+                    android:background="@drawable/watch_now"
+                    android:elevation="30dp"
+                    android:fontFamily="@font/poppins"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="Watch Trailer"
+                    android:textAlignment="center"
+                    android:textColor="@color/whitegray"
+                    android:textStyle="bold" />
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/watch_trailer"
+                    style="@android:style/Widget.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dp"
+                    android:alpha="0.8"
+                    android:background="@drawable/watch_trailer"
+                    android:elevation="30dp"
+                    android:fontFamily="@font/poppins"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="Watch Now"
+                    android:textAlignment="center"
+                    android:textColor="@color/puple"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-29dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="15dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/movie_genres_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
+                            android:text="Genres"
+                            android:fontFamily="@font/poppins"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Duration    :    "
+                            android:fontFamily="@font/poppins"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                        <TextView
+                        android:id="@+id/movie_duration_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Duration"
+                        android:fontFamily="@font/poppins"
+                        android:textColor="@color/subheading"
+                        android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/movie_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Movie Title"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/movie_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Movie Description"
+                        android:fontFamily="@font/poppins"
+                        android:textColor="@color/subheading"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/like"
+                                style="@android:style/Widget.Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:alpha="0.8"
+                                android:background="@drawable/rate_btn"
+                                android:elevation="30dp"
+                                android:fontFamily="@font/poppins"
+                                android:paddingLeft="15dp"
+                                android:paddingRight="15dp"
+                                android:text="3K"
+                                android:textAlignment="center"
+                                android:textColor="@color/whitegray"
+                                android:textStyle="bold" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginStart="20dp">
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/bookmark"
+                                    style="@android:style/Widget.Button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:alpha="0.8"
+                                    android:background="@drawable/rate_btn"
+                                    android:elevation="30dp"
+                                    android:fontFamily="@font/poppins"
+                                    android:paddingLeft="15dp"
+                                    android:paddingRight="15dp"
+                                    android:textAlignment="center"
+                                    android:text="Book"
+                                    android:textColor="@color/whitegray"
+                                    android:textStyle="bold" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/share"
+                                    style="@android:style/Widget.Button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="1dp"
+                                    android:alpha="0.8"
+                                    android:background="@drawable/rate_btn"
+                                    android:elevation="30dp"
+                                    android:fontFamily="@font/poppins"
+                                    android:paddingLeft="15dp"
+                                    android:paddingRight="15dp"
+                                    android:text="share"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/whitegray"
+                                    android:textStyle="bold" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/download"
+                                    style="@android:style/Widget.Button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="1dp"
+                                    android:alpha="0.8"
+                                    android:background="@drawable/button"
+                                    android:elevation="30dp"
+                                    android:fontFamily="@font/poppins"
+                                    android:paddingLeft="15dp"
+                                    android:paddingRight="15dp"
+                                    android:text=""
+                                    android:textAlignment="center"
+                                    android:textColor="@color/whitegray"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="Cast &amp; Crew"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/poppins"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/reycleview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/audiomark"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Audio Track"
+                                android:fontFamily="@font/poppins"
+                                android:textColor="@color/white"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/subtitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="Subtitles"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</ScrollView>
