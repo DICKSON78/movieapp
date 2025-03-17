@@ -1,7 +1,7 @@
 package com.example.movies;
 
 public class ActorDetails {
-    private int id; // Added id field
+    private int id;
     private String name;
     private String biography;
     private String profile_path;

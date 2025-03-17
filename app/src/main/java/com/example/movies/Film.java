@@ -77,6 +77,12 @@ public class Film extends AppCompatActivity {
                     .into(filmBanner);
         }
 
+
+        int movieId = getIntent().getIntExtra("movieId", -1);
+        if (movieId != -1) {
+            fetchMovieDetails(movieId);
+        }
+
         backButton.setOnClickListener(v -> onBackPressed());
         watchNowButton.setOnClickListener(v -> fetchMovieVideosFromTMDB(movieId));
         watchTrailerButton.setOnClickListener(v -> Toast.makeText(this, "Watch Trailer Clicked", Toast.LENGTH_SHORT).show());

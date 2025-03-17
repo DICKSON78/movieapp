@@ -51,7 +51,8 @@ import retrofit2.Response;
 
 public class WelcomFragment extends Fragment {
     private LinearLayout ratingYearAgeContainer, playButtonContainer;
-    private RecyclerView recyclerView, continueWatchingRecyclerView;
+    private MovieBannerManager bannerManager;
+    private RecyclerView recyclerView, continueWatchingRecyclerView , latestMoviesRecyclerView;
     private final String API_KEY = "fecae410722bc227d74f320928c3f0a4";
     private VideoAdapter videoAdapter;
     private ContinueWatchingAdapter continueWatchingAdapter;
@@ -89,12 +90,18 @@ public class WelcomFragment extends Fragment {
         continueWatchingAdapter = new ContinueWatchingAdapter (new ArrayList<> (), new ArrayList<> ());
         continueWatchingRecyclerView.setAdapter (continueWatchingAdapter);
 
+        //Latest Movie Display variables
+        latestMoviesRecyclerView = view.findViewById(R.id.movies_reyclerview);
+        bannerManager = new MovieBannerManager(getContext(), latestMoviesRecyclerView, API_KEY);
+        bannerManager.fetchAndDisplayPopularMoviesAndVideos ();
+
 
 
         // Apply ItemDecoration to recyclerView
         int horizontalSpacing = (int) dpToPx(8, getContext());
         int verticalSpacing = dpToPx(10, getContext());
         recyclerView.addItemDecoration(new RecyclerViewItemDecoration(verticalSpacing, horizontalSpacing));
+        latestMoviesRecyclerView.addItemDecoration(new RecyclerViewItemDecoration(verticalSpacing, horizontalSpacing));
 
 
 
@@ -252,15 +259,9 @@ public class WelcomFragment extends Fragment {
                     List<MovieResponse.Video> videos = movieResponse.getResults();
 
                     if (videos != null && !videos.isEmpty()) {
-                        for (MovieResponse.Video video : videos) {
-                            Log.d("VIDEO_ITEM", "Video Key: " + video.getKey() + ", Site: " + video.getSite() + ", Type: " + video.getType());
-                            Log.d("URL_CHECK", "Video URL: " + video.getVideoUrl() + ", Thumbnail URL: " + video.getThumbnailUrl());
-                            videoAdapter = new VideoAdapter(getContext(), videos);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-                            recyclerView.setAdapter(videoAdapter);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-
+                        videoAdapter = new VideoAdapter(getContext(), videos);
+                        recyclerView.setAdapter(videoAdapter);
+                        recyclerView.setVisibility(View.VISIBLE);
                     } else {
                         Log.w("FetchVideos", "No videos found for movie ID: " + movieId);
                         Toast.makeText(getContext(), "No videos found.", Toast.LENGTH_SHORT).show();
@@ -285,7 +286,6 @@ public class WelcomFragment extends Fragment {
             }
         });
     }
-
     private void loadContinueWatching() {
         List<ContinueWatchingItem> continueWatchingList = getContinueWatchingList ();
         List<Movie> movieList = new ArrayList<> ();
@@ -294,6 +294,8 @@ public class WelcomFragment extends Fragment {
                 fetchMovieById (item.getMovieId (), movieList);
             }
         } else {
+
+            //
 
         }
     }

@@ -17,18 +17,18 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
     private List<Cast> castList;
     private Context context;
-    private OnItemClickListener listener; // Add listener
+    private OnItemClickListener listener;
 
     public CastAdapter(Context context, List<Cast> castList) {
         this.context = context;
         this.castList = castList;
     }
 
-    public interface OnItemClickListener { // Functional interface
+    public interface OnItemClickListener {
         void onItemClick(Cast cast);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) { // Corrected method
+    public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 

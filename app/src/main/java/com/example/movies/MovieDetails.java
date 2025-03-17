@@ -119,7 +119,8 @@ public class MovieDetails {
 
     public String getYear() {
         if (releaseDate == null || releaseDate.isEmpty()) {
-            return null; // Or return an empty string ""
+            // Return String
+            return null;
         }
 
         try {
@@ -130,7 +131,7 @@ public class MovieDetails {
             return outputFormat.format(date);
         } catch (ParseException e) {
             e.printStackTrace();
-            return null; // Or return an empty string "" or some default value
+            return null;
         }
     }
 

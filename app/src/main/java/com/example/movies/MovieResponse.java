@@ -9,9 +9,6 @@ public class MovieResponse {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("site")
-    private int site;
-
     @SerializedName("results")
     private List<Video> results;
 
@@ -39,7 +36,7 @@ public class MovieResponse {
         private String videoUrl;
         private String site;
         private String thumbnailUrl;
-
+        private String movieTitle; // Added movieTitle field
 
         @SerializedName("key")
         private String key;
@@ -75,26 +72,35 @@ public class MovieResponse {
         }
 
         public String getVideoUrl() {
-            if (site != null && key != null && site.equals("themoviedb")) {
-                return "https://api.themoviedb.org/3/collection/collection_id/images " + key;
+            if (site != null && key != null && site.equalsIgnoreCase("YouTube")) {
+                return "https://www.youtube.com/watch?v=" + key; // Standard YouTube URL
             } else {
                 return null;
             }
         }
 
         public String getThumbnailUrl() {
-            if (site != null && key != null && site.equals("themoviedb")) {
-                return "https://api.themoviedb.org/3/collection/collection_id/images" + key + "/0.jpg";
+            if (site != null && key != null && site.equalsIgnoreCase("YouTube")) {
+                return "https://img.youtube.com/vi/" + key + "/0.jpg"; // Standard YouTube thumbnail URL
             } else {
                 return null;
             }
         }
+
         public String getSite() {
             if (site != null) {
                 return site;
             } else {
                 return null;
             }
+        }
+
+        public void setMovieTitle(String title) {
+            this.movieTitle = title;
+        }
+
+        public String getMovieTitle() {
+            return movieTitle;
         }
     }
 }
