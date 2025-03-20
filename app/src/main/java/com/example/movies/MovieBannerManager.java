@@ -21,6 +21,7 @@ public class MovieBannerManager {
     private final RecyclerView recyclerView;
     private final ApiService apiService;
     private final String apiKey;
+    private OnMovieClickListener movieClickListener; // Add this line
 
     public MovieBannerManager(Context context, RecyclerView recyclerView, String apiKey) {
         this.context = context;
@@ -29,52 +30,36 @@ public class MovieBannerManager {
         this.apiService = ApiClient.getApiService();
     }
 
+    public void setMovieClickListener(OnMovieClickListener listener) { // Add this method
+        this.movieClickListener = listener;
+    }
+
     public void fetchAndDisplayPopularMoviesAndVideos() {
         Call<MovieDetails> movieCall = apiService.getPopularMovies(apiKey);
-        Call<MovieResponse> videoCall = apiService.getMovieVideos(157336, apiKey);
 
         movieCall.enqueue(new Callback<MovieDetails>() {
             @Override
             public void onResponse(Call<MovieDetails> call, Response<MovieDetails> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Movie> movies = response.body().getResults();
+                    List<MovieItem> items = new ArrayList<>();
 
-                    videoCall.enqueue(new Callback<MovieResponse>() {
-                        @Override
-                        public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                            if (response.isSuccessful() && response.body() != null) {
-                                List<MovieResponse.Video> videos = response.body().getResults();
-
-                                List<MovieItem> items = new ArrayList<>();
-                                if (movies != null) {
-                                    for (Movie movie : movies) {
-                                        items.add(new MovieItem(movie));
-                                    }
-                                }
-
-                                if (videos != null) {
-                                    for (MovieResponse.Video video : videos) {
-                                        fetchMovieTitle(video, items);
-                                    }
-                                }
-                                if (!items.isEmpty()) {
-                                    MovieBannerAdapter adapter = new MovieBannerAdapter(context, items, movieId -> openMovieDetails(movieId)); // Pass the listener
-                                    recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-                                    recyclerView.setAdapter(adapter);
-                                    recyclerView.setVisibility(android.view.View.VISIBLE);
-                                } else {
-                                    Log.w("MovieBannerManager", "No popular movies or videos found.");
-                                    Toast.makeText(context, "No popular movies or videos found.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
+                    if (movies != null) {
+                        for (Movie movie : movies) {
+                            items.add(new MovieItem(movie));
+                            fetchMovieVideos(movie.getId(), items);
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<MovieResponse> call, Throwable t) {
-                            Log.e("MovieBannerManager", "Network error: " + t.getMessage());
-                            Toast.makeText(context, "Network error loading popular movies.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    if (!items.isEmpty()) {
+                        MovieBannerAdapter adapter = new MovieBannerAdapter(context, items, movieClickListener::onMovieClick); // Pass the listener
+                        recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setVisibility(android.view.View.VISIBLE);
+                    } else {
+                        Log.w("MovieBannerManager", "No popular movies found.");
+                        Toast.makeText(context, "No popular movies found.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -86,9 +71,32 @@ public class MovieBannerManager {
         });
     }
 
-    private void fetchMovieTitle(MovieResponse.Video video, List<MovieItem> items) {
-        int movieId = 157336; // Default, replace with actual ID if available
+    private void fetchMovieVideos(int movieId, List<MovieItem> items) {
+        Call<MovieResponse> videoCall = apiService.getMovieVideos(movieId, apiKey);
 
+        videoCall.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<MovieResponse.Video> videos = response.body().getResults();
+                    if (videos != null) {
+                        for (MovieResponse.Video video : videos) {
+                            fetchMovieTitle(video, items, movieId);
+                        }
+                    }
+                } else {
+                    Log.e("MovieBannerManager", "Failed to fetch videos for movie ID: " + movieId);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                Log.e("MovieBannerManager", "Network error fetching videos: " + t.getMessage());
+            }
+        });
+    }
+
+    private void fetchMovieTitle(MovieResponse.Video video, List<MovieItem> items, int movieId) {
         apiService.getMovieById(movieId, apiKey).enqueue(new Callback<MovieListResponse>() {
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
@@ -114,5 +122,9 @@ public class MovieBannerManager {
         Intent intent = new Intent(context, Film.class);
         intent.putExtra("movieId", movieId);
         context.startActivity(intent);
+    }
+
+    public interface OnMovieClickListener {
+        void onMovieClick(int movieId);
     }
 }

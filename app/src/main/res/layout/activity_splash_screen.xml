@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Orange"
+    tools:context=".SplashScreenActivity">
+
+    <TextView
+        android:id="@+id/movie_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Movie"
+        android:textColor="@color/puple"
+        android:fontFamily="@font/poppins"
+        android:textSize="48sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="300dp"
+        android:alpha="1" />
+
+    <TextView
+        android:id="@+id/magic_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Magic"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/poppins"
+        android:layout_below="@id/movie_text"
+        android:alpha="1" />
+
+</RelativeLayout>

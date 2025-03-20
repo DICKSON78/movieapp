@@ -1,4 +1,4 @@
-package  com.example.movies;
+package com.example.movies;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -30,7 +30,7 @@ public class Film extends AppCompatActivity {
 
     private ImageView filmBanner;
     private AppCompatButton backButton, rateButton, watchNowButton, watchTrailerButton, likeButton, bookmarkButton, shareButton, downloadButton;
-    private TextView movieTitleTextView, movieDescriptionTextView, movieDurationTextView, audioTextView, subtitleTextView, movieGenresText, movieReleaseDateText,latest,TvShows,upcoming;
+    private TextView movieTitleTextView, movieDescriptionTextView, movieDurationTextView, audioTextView, subtitleTextView, movieGenresText, movieReleaseDateText;
     private RecyclerView castRecyclerView;
     private CastAdapter castAdapter;
 
@@ -44,6 +44,10 @@ public class Film extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_film);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.setCancelable(false);
 
         filmBanner = findViewById(R.id.film_banner);
         backButton = findViewById(R.id.back);
@@ -62,45 +66,37 @@ public class Film extends AppCompatActivity {
         subtitleTextView = findViewById(R.id.subtitle);
         castRecyclerView = findViewById(R.id.reycleview);
         castRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        castRecyclerView.setAdapter(castAdapter);
-
-
 
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
             movieId = intent.getExtras().getInt("movieId");
             moviePosterPath = intent.getExtras().getString("moviePosterPath");
             fetchMovieDetails(movieId);
-            String imageUrl = "https://image.tmdb.org/t/p/w500" + moviePosterPath;
-            Glide.with(this)
-                    .load(imageUrl)
-                    .into(filmBanner);
-        }
-
-
-        int movieId = getIntent().getIntExtra("movieId", -1);
-        if (movieId != -1) {
-            fetchMovieDetails(movieId);
+            if (moviePosterPath != null) {
+                String imageUrl = "https://image.tmdb.org/t/p/w500" + moviePosterPath;
+                Glide.with(this)
+                        .load(imageUrl)
+                        .into(filmBanner);
+            }
         }
 
         backButton.setOnClickListener(v -> onBackPressed());
         watchNowButton.setOnClickListener(v -> fetchMovieVideosFromTMDB(movieId));
-        watchTrailerButton.setOnClickListener(v -> Toast.makeText(this, "Watch Trailer Clicked", Toast.LENGTH_SHORT).show());
-        likeButton.setOnClickListener(v -> Toast.makeText(this, "Liked", Toast.LENGTH_SHORT).show());
-        bookmarkButton.setOnClickListener(v -> Toast.makeText(this, "Bookmarked", Toast.LENGTH_SHORT).show());
-        shareButton.setOnClickListener(v -> Toast.makeText(this, "Shared", Toast.LENGTH_SHORT).show());
-        downloadButton.setOnClickListener(v -> Toast.makeText(this, "Downloaded", Toast.LENGTH_SHORT).show());
+        watchTrailerButton.setOnClickListener(v -> Toast.makeText(this, R.string.watch_trailer_clicked, Toast.LENGTH_SHORT).show());
+        likeButton.setOnClickListener(v -> Toast.makeText(this, R.string.liked, Toast.LENGTH_SHORT).show());
+        bookmarkButton.setOnClickListener(v -> Toast.makeText(this, R.string.bookmarked, Toast.LENGTH_SHORT).show());
+        shareButton.setOnClickListener(v -> Toast.makeText(this, R.string.shared, Toast.LENGTH_SHORT).show());
+        downloadButton.setOnClickListener(v -> Toast.makeText(this, R.string.downloaded, Toast.LENGTH_SHORT).show());
     }
 
-
-
-
     private void fetchMovieDetails(int movieId) {
+        progressDialog.show();
         ApiService apiService = ApiClient.getApiService();
         Call<MovieDetails> call = apiService.getMovieDetails(movieId, API_KEY);
         call.enqueue(new Callback<MovieDetails>() {
             @Override
             public void onResponse(Call<MovieDetails> call, Response<MovieDetails> response) {
+                progressDialog.dismiss();
                 if (response.isSuccessful() && response.body() != null) {
                     MovieDetails movieDetails = response.body();
                     updateUI(movieDetails);
@@ -112,6 +108,7 @@ public class Film extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MovieDetails> call, Throwable t) {
+                progressDialog.dismiss();
                 handleApiFailure(t);
             }
         });
@@ -128,7 +125,6 @@ public class Film extends AppCompatActivity {
                     CastResponse castResponse = response.body();
                     castAdapter = new CastAdapter(Film.this, castResponse.getCast());
                     castRecyclerView.setAdapter(castAdapter);
-                    castAdapter.notifyDataSetChanged();
                     setupCastClickListener();
                 } else {
                     handleApiError(response);
@@ -148,31 +144,39 @@ public class Film extends AppCompatActivity {
                 @Override
                 public void onItemClick(Cast cast) {
                     if (cast != null) {
-                        Log.d("CastAdapter", "onItemClick triggered for: " + cast.getName() + ", ID: " + cast.getId());
-                        progressDialog.setTitle("Loading...");
-                        progressDialog.setCanceledOnTouchOutside(false);
-                        progressDialog.show();
                         openActorDetails(cast);
                     } else {
-                        Toast.makeText(getApplicationContext(), "Error opening actor details.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.error_opening_actor_details, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }
     }
 
+    private void openActorDetails(Cast cast) {
+        if (cast != null) {
+            Intent intent = new Intent(this, ActorActivity.class);
+            intent.putExtra("castId", cast.getId());
+            intent.putExtra("castProfilePath", cast.getProfilePath());
+            startActivity(intent);
+        } else {
+            Log.e("Film", "openActorDetails: Cast object is null");
+            Toast.makeText(this, R.string.error_opening_actor_details, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void updateUI(MovieDetails movieDetails) {
         if (movieDetails != null) {
-            updateTextView(movieTitleTextView, movieDetails.getTitle(), "Unknown", "movieTitleTextView");
+            updateTextView(movieTitleTextView, movieDetails.getTitle(), getString(R.string.unknown), "movieTitleTextView");
             updateGenresText(movieDetails.getGenres());
-            updateTextView(movieReleaseDateText, movieDetails.getYear(), "Release Date Unavailable", "movieReleaseDateText");
-            updateTextView(movieDescriptionTextView, movieDetails.getOverview(), "Description Unavailable", "movieDescriptionTextView");
+            updateTextView(movieReleaseDateText, movieDetails.getYear(), getString(R.string.release_date_unavailable), "movieReleaseDateText");
+            updateTextView(movieDescriptionTextView, movieDetails.getOverview(), getString(R.string.description_unavailable), "movieDescriptionTextView");
             updateDurationText(movieDetails.getRuntime());
             updateRateButton(movieDetails.getVoteAverage(), movieDetails.getYear(), movieDetails.getImdbId());
             updateLikeButton(movieDetails.getVoteCount());
             updateFilmBanner(movieDetails.getPosterPath());
             updateAudioTextView(movieDetails.getSpokenLanguages());
-            updateTextView(subtitleTextView, movieDetails.getSubtitle(), "Subtitles: English, Polish, German", "subtitleTextView");
+            updateTextView(subtitleTextView, movieDetails.getSubtitle(), getString(R.string.subtitles_default), "subtitleTextView");
         } else {
             Log.e("Film", "movieDetails is null!");
         }
@@ -185,7 +189,7 @@ public class Film extends AppCompatActivity {
                 Log.d("Film", logTag + " updated: " + value);
             } else {
                 textView.setText(defaultValue);
-                Log.d("Film", logTag + " updated: " + defaultValue + " (API returned null)");
+                Log.d("Film", logTag + " updated: " +defaultValue + " (API returned null)");
             }
         } else {
             Log.e("Film", logTag + " is null!");
@@ -199,7 +203,7 @@ public class Film extends AppCompatActivity {
                 movieGenresText.setText(genresString);
                 Log.d("Film", "movieGenresText updated: " + genresString);
             } else {
-                movieGenresText.setText("Genres not available");
+                movieGenresText.setText(getString(R.string.genres_not_available));
                 Log.d("Film", "movieGenresText updated: Genres not available");
             }
         } else {
@@ -212,10 +216,10 @@ public class Film extends AppCompatActivity {
             if (runtime > 0) {
                 int hours = runtime / 60;
                 int minutes = runtime % 60;
-                movieDurationTextView.setText(hours + "h " + minutes + "m");
+                movieDurationTextView.setText(getString(R.string.duration_format, hours, minutes));
                 Log.d("Film", "movieDurationTextView updated: " + hours + "h " + minutes + "m");
             } else {
-                movieDurationTextView.setText("Unknown");
+                movieDurationTextView.setText(getString(R.string.unknown));
                 Log.d("Film", "movieDurationTextView updated: Unknown");
             }
         } else {
@@ -226,10 +230,10 @@ public class Film extends AppCompatActivity {
     private void updateRateButton(double voteAverage, String year, String imdbId) {
         if (rateButton != null) {
             if (imdbId != null && !imdbId.equals("91")) {
-                rateButton.setText("Top " + voteAverage + " | " + year);
+                rateButton.setText(getString(R.string.rate_format, voteAverage, year));
                 Log.d("Film", "rateButton updated: " + imdbId);
             } else {
-                rateButton.setText("IMDb ID Unavailable");
+                rateButton.setText(getString(R.string.imdb_id_unavailable));
                 Log.d("Film", "rateButton updated: IMDb ID Unavailable");
                 if (imdbId != null && imdbId.equals("91")) {
                     Log.w("Film", "IMDB ID was 91, replaced with Unavailable");
@@ -246,7 +250,7 @@ public class Film extends AppCompatActivity {
                 likeButton.setText(String.valueOf(voteCount));
                 Log.d("Film", "likeButton updated: " + voteCount);
             } else {
-                likeButton.setText("Vote Count Unavailable");
+                likeButton.setText(getString(R.string.vote_count_unavailable));
                 Log.d("Film", "likeButton updated: Vote Count Unavailable");
                 if (voteCount == 91) {
                     Log.w("Film", "Vote Count was 91, replaced with Unavailable");
@@ -273,7 +277,7 @@ public class Film extends AppCompatActivity {
 
     private void updateAudioTextView(List<MovieDetails.SpokenLanguage> spokenLanguages) {
         if (audioTextView != null) {
-            StringBuilder audioBuilder = new StringBuilder("Audio Track: ");
+            StringBuilder audioBuilder = new StringBuilder(getString(R.string.audio_track_label));
             if (spokenLanguages != null && !spokenLanguages.isEmpty()) {
                 for (int i = 0; i < spokenLanguages.size(); i++) {
                     audioBuilder.append(spokenLanguages.get(i).getName());
@@ -282,7 +286,7 @@ public class Film extends AppCompatActivity {
                     }
                 }
             } else {
-                audioBuilder.append("Unknown");
+                audioBuilder.append(getString(R.string.unknown));
             }
             audioTextView.setText(audioBuilder.toString());
             Log.d("Film", "audioTextView updated: " + audioBuilder.toString());
@@ -332,83 +336,13 @@ public class Film extends AppCompatActivity {
                 try {
                     startActivity(intent);
                 } catch (android.content.ActivityNotFoundException e) {
-                    Toast.makeText(this, "No app found to play the video.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.no_app_to_play_video, Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(Film.this, "No video available.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Film.this, R.string.no_video_available, Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(Film.this, "No video available.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void openActorDetails(Cast cast) {
-        if (cast != null) {
-            Intent intent = new Intent(this, ActorActivity.class);
-            intent.putExtra("castId", cast.getId());
-            intent.putExtra("castProfilePath", cast.getProfilePath());
-            Log.d("CastAdapter", "Starting ActorActivity with castId: " + cast.getId());
-            startActivity(intent);
-        } else {
-            Log.e("CastAdapter", "openActorDetails: Cast object is null");
-            Toast.makeText(this, "Error opening actor details.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private String convertGenreIdsToNames(List<Integer> genreIds) {
-        StringBuilder genreNames = new StringBuilder();
-        for (int genreId : genreIds) {
-            String genreName = getGenreNameById(genreId);
-            if (genreNames.length() > 0) {
-                genreNames.append(" . ");
-            }
-            genreNames.append(genreName);
-        }
-        return genreNames.toString();
-    }
-
-    private String getGenreNameById(int genreId) {
-        switch (genreId) {
-            case 28:
-                return "Action";
-            case 12:
-                return "Adventure";
-            case 16:
-                return "Animation";
-            case 35:
-                return "Comedy";
-            case 80:
-                return "Crime";
-            case 99:
-                return "Documentary";
-            case 18:
-                return "Drama";
-            case 10751:
-                return "Family";
-            case 14:
-                return "Fantasy";
-            case 36:
-                return "History";
-            case 27:
-                return "Horror";
-            case 10402:
-                return "Music";
-            case 9648:
-                return "Mystery";
-            case 10749:
-                return "Romance";
-            case 878:
-                return "Science Fiction";
-            case 10770:
-                return "TV Movie";
-            case 53:
-                return "Thriller";
-            case 10752:
-                return "War";
-            case 37:
-                return "Western";
-            default:
-                return "Unknown";
+            Toast.makeText(Film.this, R.string.no_video_available, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -421,12 +355,12 @@ public class Film extends AppCompatActivity {
                 Log.e("API_RESPONSE", "Error reading error body", e);
             }
         }
-        Toast.makeText(Film.this, "Failed to load data.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(Film.this, R.string.failed_to_load_data, Toast.LENGTH_SHORT).show();
     }
 
     private void handleApiFailure(Throwable t) {
         Log.e("API_FAILURE", "API call failed: " + t.getMessage());
         t.printStackTrace();
-        Toast.makeText(Film.this, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(Film.this, R.string.network_error, Toast.LENGTH_SHORT).show();
     }
 }

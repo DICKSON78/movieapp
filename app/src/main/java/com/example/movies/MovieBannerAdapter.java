@@ -129,7 +129,7 @@ public class MovieBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (movieTitle != null && !movieTitle.isEmpty()) {
                 titleTextView.setText(movieTitle);
             } else {
-                titleTextView.setText("");
+                titleTextView.setText("Unknown Movie"); //Changed from "Unknown" to "Unknown Movie"
             }
 
             if (videoUrl != null && !videoUrl.isEmpty()) {

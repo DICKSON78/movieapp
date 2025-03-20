@@ -44,7 +44,7 @@ public class ActorActivity extends AppCompatActivity {
         castBiography = findViewById(R.id.cast_description);
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading actor details...");
+        progressDialog.setMessage(getString(R.string.loading_actor_details)); // Using string resource
         progressDialog.setCancelable(false);
 
         Intent intent = getIntent();
@@ -63,6 +63,7 @@ public class ActorActivity extends AppCompatActivity {
                             @Override
                             public boolean onLoadFailed(GlideException e, Object model, Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
                                 Log.e("Glide", "Image load failed", e);
+                                Toast.makeText(ActorActivity.this, getString(R.string.image_load_failed), Toast.LENGTH_SHORT).show(); // Using string resource
                                 return false;
                             }
 
@@ -75,7 +76,7 @@ public class ActorActivity extends AppCompatActivity {
             }
         } else {
             Log.e("ActorActivity", "Intent or extras are null.");
-            Toast.makeText(this, "Error loading actor details.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_loading_actor_details), Toast.LENGTH_SHORT).show(); // Using string resource
             finish();
         }
     }
@@ -96,6 +97,7 @@ public class ActorActivity extends AppCompatActivity {
                     updateUI(cast);
                 } else {
                     Log.e("API_RESPONSE", "Unsuccessful actor response: " + response.code());
+                    Toast.makeText(ActorActivity.this, getString(R.string.failed_to_load_actor_information), Toast.LENGTH_SHORT).show(); // Using string resource
                     if (response.errorBody() != null) {
                         try {
                             Log.e("API_RESPONSE", "Error body: " + response.errorBody().string());
@@ -112,7 +114,7 @@ public class ActorActivity extends AppCompatActivity {
                 long endTime = System.currentTimeMillis();
                 Log.d("API_TIMING", "API call failed after: " + (endTime - startTime) + "ms");
                 Log.e("API_FAILURE", "API actor call failed: " + t.getMessage());
-                Toast.makeText(ActorActivity.this, "Failed to load actor information.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ActorActivity.this, getString(R.string.failed_to_load_actor_information), Toast.LENGTH_SHORT).show(); // Using string resource
             }
         });
     }

@@ -1,7 +1,6 @@
 package com.example.movies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder> {
@@ -49,15 +50,16 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
                 Glide.with(context)
                         .load(imageUrl)
-                        .placeholder(R.drawable.placeholder_actor)
-                        .error(R.drawable.person)
+                        .placeholder(R.drawable.placeholder_actor) // Using placeholder
+                        .error(R.drawable.person) // Using error image
                         .into(holder.castImageView);
             } else {
-                holder.castImageView.setImageResource(R.drawable.placeholder_actor);
+                holder.castImageView.setImageResource(R.drawable.placeholder_actor); // Default placeholder if no image
             }
+            holder.castNameTextView.setText(cast.getName());
 
             holder.itemView.setOnClickListener(v -> {
-                if (listener != null) { // Invoke listener
+                if (listener != null) {
                     listener.onItemClick(cast);
                 }
             });
@@ -81,7 +83,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
         public CastViewHolder(@NonNull View itemView) {
             super(itemView);
             castImageView = itemView.findViewById(R.id.actorImage);
-            castNameTextView= itemView.findViewById (R.id.actorName);
+            castNameTextView = itemView.findViewById(R.id.actorName);
         }
     }
 }

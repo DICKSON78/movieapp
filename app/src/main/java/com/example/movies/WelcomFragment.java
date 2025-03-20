@@ -93,7 +93,9 @@ public class WelcomFragment extends Fragment {
         //Latest Movie Display variables
         latestMoviesRecyclerView = view.findViewById(R.id.movies_reyclerview);
         bannerManager = new MovieBannerManager(getContext(), latestMoviesRecyclerView, API_KEY);
-        bannerManager.fetchAndDisplayPopularMoviesAndVideos ();
+        bannerManager.setMovieClickListener(movieId -> openMovieDetails(movieId)); // Set click listener
+        bannerManager.fetchAndDisplayPopularMoviesAndVideos();
+
 
 
 
@@ -116,7 +118,7 @@ public class WelcomFragment extends Fragment {
         SignOut.setOnClickListener (v -> signOut ());
         PlayButton.setOnClickListener (v -> Toast.makeText (getContext (), "Play Button Clicked", Toast.LENGTH_SHORT).show ());
 
-        fetchMovieVideos (157336);
+        fetchMovieVideos (getId ());
         fetchAndSetSliderImages (imageSlider);
         loadContinueWatching ();
 
@@ -185,6 +187,14 @@ public class WelcomFragment extends Fragment {
                                 slideModels.add (new SlideModel (imageUrl, ScaleTypes.CENTER_CROP));
                             }
                         }
+
+                        if(ratingYearAgeContainer != null) {
+                            ratingYearAgeContainer.setVisibility(View.VISIBLE);
+                        }
+                        if(movieDurationText != null) {
+                            movieDurationText.setVisibility(View.VISIBLE);
+                        }
+
                     }
                     if (imageSlider != null) imageSlider.setImageList (slideModels);
 
@@ -195,7 +205,7 @@ public class WelcomFragment extends Fragment {
                                 if (movies != null && position >= 0 && position < movies.size ()) {
                                     Movie selectedMovie = movies.get (position);
                                     if (selectedMovie != null) {
-                                        openMovieDetails (selectedMovie);
+                                        openMovieDetails (selectedMovie.getId ());
                                     } else {
                                         Log.e ("ImageSlider", "Selected movie is null at position: " + position);
                                         Toast.makeText (getContext (), "Error opening movie details.", Toast.LENGTH_SHORT).show ();
@@ -233,16 +243,10 @@ public class WelcomFragment extends Fragment {
         });
     }
 
-    private void openMovieDetails(Movie selectedMovie) {
-        Intent intent = new Intent (getContext (), Film.class);
-        intent.putExtra ("movieId", selectedMovie.getId ());
-        intent.putExtra ("movieTitle", selectedMovie.getTitle ());
-        intent.putExtra ("movieRating", selectedMovie.getVoteAverage ());
-        intent.putExtra ("movieYear", selectedMovie.getReleaseDate ());
-        intent.putExtra ("movieDescription", selectedMovie.getOverview ());
-        intent.putExtra ("moviePosterPath", selectedMovie.getPosterPath ());
-
-        startActivity (intent);
+    private void openMovieDetails(int movieId) {
+        Intent intent = new Intent(getContext(), Film.class);
+        intent.putExtra("movieId", movieId);
+        startActivity(intent);
     }
 
 
