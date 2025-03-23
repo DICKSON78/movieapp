@@ -1,135 +1,63 @@
 package com.example.movies;
-
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.List;
 
-public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
+public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MovieViewHolder> {
+    private Context context;
+    private List<Movie> movieList;
+    private OnMovieClickListener listener;
 
-    private final List<MovieResponse.Video> videoList;
-    private final Context context;
+    public interface OnMovieClickListener {
+        void onMovieClick(Movie movie);
+    }
 
-    public VideoAdapter(Context context, List<MovieResponse.Video> videoList) {
+    public void MovieAdapter(Context context, List<Movie> movieList, OnMovieClickListener listener) {
         this.context = context;
-        this.videoList = videoList;
+        this.movieList = movieList;
+        this.listener = listener;
     }
 
-    @NonNull
     @Override
-    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.continue_watching_item, parent, false);
-        return new VideoViewHolder(view);
+        return new MovieViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        MovieResponse.Video video = videoList.get(position);
-        String videoUrl = video.getVideoUrl();
-        String thumbnailUrl = video.getThumbnailUrl();
+    public void onBindViewHolder(MovieViewHolder holder, int position) {
+        Movie movie = movieList.get(position);
+        holder.titleTextView.setText(movie.getTitle());
+        // Use an image loading library like Glide or Picasso to load the poster
+        Glide.with(context)
+                .load("https://image.tmdb.org/t/p/w500" + movie.getPosterPath())
+                .into(holder.posterImageView);
 
-        Log.d("VideoAdapter", "Binding video at position: " + position + ", URL: " + videoUrl);
-        holder.setupVideoPlayback(videoUrl, thumbnailUrl);
+        holder.itemView.setOnClickListener(v -> listener.onMovieClick(movie));
     }
 
     @Override
     public int getItemCount() {
-        return videoList.size();
+        return movieList.size();
     }
 
-    public static class VideoViewHolder extends RecyclerView.ViewHolder {
-        PlayerView playerView;
-        ExoPlayer player;
-        ImageView thumbnailImageView;
-        Context context;
+    public class MovieViewHolder extends RecyclerView.ViewHolder {
+        TextView titleTextView;
+        ImageView posterImageView;
 
-        public VideoViewHolder(@NonNull View itemView) {
+        public MovieViewHolder(View itemView) {
             super(itemView);
-            playerView = itemView.findViewById(R.id.player_view);
-            thumbnailImageView = itemView.findViewById(R.id.video_thumbnail);
-            context = itemView.getContext();
-
-            player = new ExoPlayer.Builder(context).build();
-            playerView.setPlayer(player);
-
-            thumbnailImageView.setOnClickListener(v -> {
-                thumbnailImageView.setVisibility(View.GONE);
-                playerView.setVisibility(View.VISIBLE);
-                setupExoPlayer();
-            });
-            playerView.setVisibility(View.GONE);
+            titleTextView = itemView.findViewById(R.id.movie_title);
+            posterImageView = itemView.findViewById(R.id.video_thumbnail);
         }
-
-        public void setupVideoPlayback(String videoUrl, String thumbnailUrl) {
-            Glide.with(context)
-                    .load(thumbnailUrl)
-                    .into(thumbnailImageView);
-
-            if (videoUrl != null && !videoUrl.isEmpty()) {
-                try {
-                    MediaItem mediaItem = MediaItem.fromUri(Uri.parse(videoUrl));
-                    player.setMediaItem(mediaItem);
-                } catch (Exception e) {
-                    Log.e("VideoAdapter", "Error creating MediaItem for URL: " + videoUrl, e);
-                    Toast.makeText(context, "Error loading video.", Toast.LENGTH_SHORT).show();
-                    playerView.setVisibility(View.GONE);
-                    thumbnailImageView.setVisibility(View.VISIBLE);
-                }
-            } else {
-                Log.e("VideoAdapter", "Video URL is null or empty.");
-                Toast.makeText(context, "Video URL is missing.", Toast.LENGTH_SHORT).show();
-                playerView.setVisibility(View.GONE);
-                thumbnailImageView.setVisibility(View.VISIBLE);
-            }
-        }
-
-        private void setupExoPlayer() {
-            if (player != null) {
-                player.prepare();
-                player.play();
-
-                player.addListener(new com.google.android.exoplayer2.Player.Listener() {
-                    @Override
-                    public void onPlayerError(PlaybackException error) {
-                        Log.e("VideoAdapter", "ExoPlayer error: " + error.getMessage(), error);
-                        Toast.makeText(context, "Error playing video: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        playerView.setVisibility(View.GONE);
-                        thumbnailImageView.setVisibility(View.VISIBLE);
-                    }
-                });
-            } else {
-                Log.e("VideoAdapter", "ExoPlayer instance is null.");
-                Toast.makeText(context, "Error playing video.", Toast.LENGTH_SHORT).show();
-                thumbnailImageView.setVisibility(View.VISIBLE);
-            }
-        }
-
-        public void releasePlayer() {
-            if (player != null) {
-                player.release();
-                player = null;
-            }
-        }
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(@NonNull VideoViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-        holder.releasePlayer();
     }
 }

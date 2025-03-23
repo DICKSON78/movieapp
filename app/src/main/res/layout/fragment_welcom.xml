@@ -84,39 +84,6 @@
             android:layout_marginTop="-90dp"
             android:orientation="vertical"
             android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/rating_year_age_container"
-                android:background="@drawable/rate_btn"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/movieRating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="7.6"
-                    android:textColor="@color/white" />
-
-                <TextView
-                    android:id="@+id/movieYear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2023"
-                    android:textColor="@color/white"
-                    android:layout_marginStart="8dp" />
-
-                <TextView
-                    android:id="@+id/movie_age_limit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="12+"
-                    android:textColor="@color/white"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
-
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/playButton"
                 android:layout_width="match_parent"
@@ -203,7 +170,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/video_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="290dp"/>
+                    android:layout_height="170dp"/>
 
             </LinearLayout>
 
@@ -220,12 +187,14 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:orientation="vertical">
 
               <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/movies_reyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:orientation="vertical"/>
 
             </LinearLayout>

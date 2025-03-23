@@ -52,6 +52,9 @@
     <string name="actors">Actors</string>
     <string name="actor_image">Actor Image</string>
     <string name="actor_name">Actor Name</string>
+    <string name="share_message">%1$s\n\n%2$s</string>
+    <string name="share_via">Share via</string>
+    <string name="no_sharing_app">No sharing app found.</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

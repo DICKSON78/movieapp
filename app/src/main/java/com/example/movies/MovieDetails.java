@@ -139,11 +139,6 @@ public class MovieDetails {
         return results;
     }
 
-    public void setResults(List<Movie> results) {
-        this.results = results;
-    }
-    // Nested classes for complex objects
-
     public static class Genre {
         @SerializedName("id")
         private int id;

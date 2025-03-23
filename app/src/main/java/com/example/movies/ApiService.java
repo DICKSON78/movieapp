@@ -15,12 +15,6 @@ public interface ApiService {
     @GET("movie/popular")
     Call<MovieDetails> getPopularMovies(@Query("api_key") String apiKey);
 
-    @GET("movie/{movie_id}/credits")
-    Call<CastResponse> getMovieCredits( // Corrected return type!
-                                        @Path("movie_id") int movieId,
-                                        @Query("api_key") String apiKey
-    );
-
     @GET("movie/{movie_id}")
     Call<MovieDetails> getMovieDetails(
             @Path("movie_id") int movieId,
@@ -64,6 +58,11 @@ public interface ApiService {
     Call<MovieResponse> getMoviesByGenre(
             @Query("api_key") String apiKey,
             @Query("with_genres") String genreIds
+    );
+    @GET("movie/{movie_id}/credits")
+    Call<CreditResponse> getMovieCredits(
+            @Path("movie_id") int movieId,
+            @Query("api_key") String apiKey
     );
 
     @GET("movie/{movie_id}/videos")

@@ -80,7 +80,7 @@ public class MovieBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public MovieBannerViewHolder(@NonNull View itemView) {
             super(itemView);
-            bannerImageView = itemView.findViewById(R.id.image_card);
+            bannerImageView = itemView.findViewById(R.id.movie_image);
 
             itemView.setOnClickListener(v -> {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {

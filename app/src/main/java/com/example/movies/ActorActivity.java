@@ -2,8 +2,11 @@ package com.example.movies;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +40,7 @@ public class ActorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actor);
-
+        getWindow ().setFlags (WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         castImage = findViewById(R.id.cast_image);
         rateButton = findViewById(R.id.rate);
         castName = findViewById(R.id.cast_name);
@@ -51,6 +54,7 @@ public class ActorActivity extends AppCompatActivity {
         if (intent != null && intent.getExtras() != null) {
             castId = intent.getExtras().getInt("castId");
             String castProfilePath = intent.getExtras().getString("castProfilePath");
+            String castBiography = intent.getExtras().getString("castBiography");
 
             fetchActorDetails(castId);
             if (castProfilePath != null && !castProfilePath.isEmpty()) {
@@ -92,13 +96,13 @@ public class ActorActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 long endTime = System.currentTimeMillis();
                 Log.d("API_TIMING", "API call took: " + (endTime - startTime) + "ms");
-                if (response.isSuccessful() && response.body() != null) {
+                if (response != null && response.isSuccessful() && response.body() != null) {
                     Cast cast = response.body();
-                    updateUI(cast);
+                    updateUI(cast);  // Ensure this method is thread-safe for UI updates
                 } else {
-                    Log.e("API_RESPONSE", "Unsuccessful actor response: " + response.code());
-                    Toast.makeText(ActorActivity.this, getString(R.string.failed_to_load_actor_information), Toast.LENGTH_SHORT).show(); // Using string resource
-                    if (response.errorBody() != null) {
+                    Log.e("API_RESPONSE", "Unsuccessful actor response: " + (response != null ? response.code() : "null"));
+                    Toast.makeText(ActorActivity.this, getString(R.string.failed_to_load_actor_information), Toast.LENGTH_SHORT).show();
+                    if (response != null && response.errorBody() != null) {
                         try {
                             Log.e("API_RESPONSE", "Error body: " + response.errorBody().string());
                         } catch (IOException e) {
@@ -113,11 +117,12 @@ public class ActorActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 long endTime = System.currentTimeMillis();
                 Log.d("API_TIMING", "API call failed after: " + (endTime - startTime) + "ms");
-                Log.e("API_FAILURE", "API actor call failed: " + t.getMessage());
-                Toast.makeText(ActorActivity.this, getString(R.string.failed_to_load_actor_information), Toast.LENGTH_SHORT).show(); // Using string resource
+                Log.e("API_FAILURE", "API actor call failed: " + (t.getMessage() != null ? t.getMessage() : "Unknown error"));
+                Toast.makeText(ActorActivity.this, getString(R.string.failed_to_load_actor_information), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void updateUI(Cast actor) {
         if (actor != null) {
@@ -126,6 +131,11 @@ public class ActorActivity extends AppCompatActivity {
             }
             if (castBiography != null) {
                 castBiography.setText(actor.getBiography());
+            }
+            if (castImage != null) {
+                String imageUrl = "https://image.tmdb.org/t/p/w500" + actor.getProfilePath();
+                castImage.setImageURI (Uri.parse (imageUrl));
+
             }
         }
     }
